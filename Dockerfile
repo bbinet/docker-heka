@@ -8,6 +8,7 @@ ADD heka_wheezy.deb /tmp/heka.deb
 RUN dpkg -i /tmp/heka.deb
 
 VOLUME ["/config"]
+VOLUME ["/var/cache/hekad"]
 
 EXPOSE 5565
 
