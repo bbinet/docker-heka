@@ -28,5 +28,5 @@ For example:
     $ docker pull bbinet/heka
 
     $ docker run --name heka \
-        -v /home/heka/config:/config \
+        -v $(pwd)/config:/etc/heka/conf.d \
         bbinet/heka

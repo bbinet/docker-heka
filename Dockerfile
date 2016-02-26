@@ -1,15 +1,22 @@
-FROM debian:wheezy
+FROM debian:jessie
 
 MAINTAINER Bruno Binet <bruno.binet@helioslite.com>
 
-#ADD https://github.com/mozilla-services/heka/releases/download/v0.7.1/heka_0.7.1_amd64.deb heka_0.7.1_amd64.deb
-#RUN dpkg -i heka_0.7.1_amd64.deb
-ADD heka_wheezy.deb /tmp/heka.deb
-RUN dpkg -i /tmp/heka.deb
+ENV HEKA_VERSION 0.10.0
+ENV HEKA_MD5 8dc72f5be664ef1659b6009c1b9ca3df
 
-VOLUME ["/config"]
-VOLUME ["/var/cache/hekad"]
+ENV DEBIAN_FRONTEND noninteractive
+RUN apt-get update && \
+  apt-get install -yq --no-install-recommends curl ca-certificates && \
+  curl -fSL -o /tmp/heka_${HEKA_VERSION}_amd64.deb https://github.com/mozilla-services/heka/releases/download/v${HEKA_VERSION}/heka_${HEKA_VERSION}_amd64.deb && \
+  echo "${HEKA_MD5}  /tmp/heka_${HEKA_VERSION}_amd64.deb" | md5sum --check && \
+  dpkg -i /tmp/heka_${HEKA_VERSION}_amd64.deb && \
+  rm /tmp/heka_${HEKA_VERSION}_amd64.deb && \
+  rm -rf /var/lib/apt/lists/*
 
-EXPOSE 5565
+#VOLUME ["/etc/heka/conf.d"]
+#VOLUME ["/var/cache/hekad"]
 
-CMD ["/usr/bin/hekad", "-config=/config/toml/"]
+#EXPOSE 5565
+
+CMD ["/usr/bin/hekad", "-config=/etc/heka/conf.d/"]
